@@ -1,0 +1,45 @@
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+bin/
+build/
+dist/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Go
+*.test
+*.out
+vendor/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Kubernetes
+*.kubeconfig
+kubeconfig
+.kube/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+.tmp/
