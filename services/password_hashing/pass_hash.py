@@ -11,9 +11,11 @@ def main():
 
 @app.route("/hash", methods=["GET", "POST"])
 def hash():
+    # Retrieve password from form and hash using 'scrypt'
     if request.method == "POST":
         password = request.form['password']
         salt = os.urandom(16)
+        # Setting the cpu/memory cost (n) and block size (r) to high ^2 values to stress test the system
         key = hashlib.scrypt(password.encode(), salt=salt, n=65536, r=16, p=1)
         return str(salt + key)
     return render_template('password_form.html')
