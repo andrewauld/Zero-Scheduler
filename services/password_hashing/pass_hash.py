@@ -14,7 +14,7 @@ def hash():
     if request.method == "POST":
         password = request.form['password']
         salt = os.urandom(16)
-        key = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1)
+        key = hashlib.scrypt(password.encode(), salt=salt, n=65536, r=16, p=1)
         return str(salt + key)
     return render_template('password_form.html')
 
