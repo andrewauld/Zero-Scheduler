@@ -1,0 +1,15 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: matrix-mult
+spec:
+  template:
+    spec:
+      containers:
+        - image: matrix-mult:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: TARGET
+              value: "Matrix Multiplication"

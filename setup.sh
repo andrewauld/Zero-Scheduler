@@ -13,7 +13,9 @@ kubectl apply -f https://github.com/knative/net-kourier/releases/download/knativ
 
 echo ""
 echo "Loading images..."
-kind load docker-image hello-knative:v1 --name ml-scheduler
+kind load docker-image matrix-mult:v1 --name ml-scheduler
+kind load docker-image pass-hash:v1 --name ml-scheduler
+kind load docker-image prime-fact:v1 --name ml-scheduler
 
 echo ""
 echo "Cluster ready!"
