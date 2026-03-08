@@ -7,7 +7,7 @@ app = Flask(__name__, template_folder=template_dir)
 
 @app.route("/")
 def main():
-    return render_template("root.html")
+    return "Root is working. Check out /prime_fact for the prime factorisation service."
 
 @app.route("/prime_fact")
 def prime_fact_route():
@@ -19,7 +19,7 @@ def prime_fact_route():
         factors = naive_fact(n)
         results.append(factors)
 
-    return str(results)
+    return f"Computed {iterations} factors."
 
 def naive_fact(n):
     factors = []

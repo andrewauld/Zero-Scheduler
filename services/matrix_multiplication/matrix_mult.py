@@ -7,7 +7,7 @@ app = Flask(__name__, template_folder=template_dir)
 
 @app.route("/")
 def main():
-    return render_template("root.html")
+    return "Root is working. Check out /matrix_mult for the matrix multiplication service."
 
 @app.route("/matrix_mult")
 def matrix_mult():
