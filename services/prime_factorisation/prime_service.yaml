@@ -6,10 +6,7 @@ spec:
   template:
     spec:
       containers:
-        - image: prime-fact:v1
+        - image: kind.local/prime-fact:v1
           imagePullPolicy: Never
           ports:
             - containerPort: 8080
-          env:
-            - name: TARGET
-              value: "Prime Factorisation"

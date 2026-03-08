@@ -35,10 +35,18 @@ echo "Waiting for Knative to be ready..."
 kubectl wait --for=condition=Ready pods --all -n knative-serving --timeout=300s
 
 echo ""
+echo "Short pause..."
+sleep 10s
+
+echo ""
 echo "Loading images..."
-kind load docker-image matrix-mult:v1 --name ml-scheduler
-kind load docker-image pass-hash:v1 --name ml-scheduler
-kind load docker-image prime-fact:v1 --name ml-scheduler
+kind load docker-image kind.local/matrix-mult:v1 --name ml-scheduler
+kind load docker-image kind.local/pass-hash:v1 --name ml-scheduler
+kind load docker-image kind.local/prime-fact:v1 --name ml-scheduler
+
+echo ""
+echo "Another short pause..."
+sleep 10s
 
 echo ""
 echo "Deploying services..."
