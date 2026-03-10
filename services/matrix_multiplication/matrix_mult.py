@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask
 import os
 import numpy as np
 
@@ -21,7 +21,7 @@ def matrix_mult():
     # Multiply the matrices to stress test the system
     with np.errstate(divide='ignore', over='ignore', invalid='ignore'):
         result = np.matmul(matrixA, matrixB)
-    return str(result)
+    return f"Completed matrix multiplication of matrices of dimensions {matrixDimensions} x {matrixDimensions}."
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
