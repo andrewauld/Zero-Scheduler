@@ -19,12 +19,19 @@ kubectl patch configmap/config-network \
 --patch '{"data":{"ingress-class":"kourier.ingress.networking.knative.dev"}}'
 
 echo ""
+echo "Configuring DNS for local access"
+kubectl patch configmap/config-domain \
+--namespace knative-serving \
+--type merge \
+--patch '{"data":{"127.0.0.1.sslip.io":""}}'
+
+echo ""
 echo "Getting external IP address"
 kubectl --namespace kourier-system get service kourier
 
-echo ""
-echo "Configuring DNS"
-kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.21.1/serving-default-domain.yaml
+#echo ""
+#echo "Configuring DNS"
+#kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.21.1/serving-default-domain.yaml
 
 echo ""
 echo "Configuring HPA autoscaling..."
@@ -59,3 +66,7 @@ kubectl apply -f services/prime_factorisation/prime_service.yaml
 
 echo ""
 echo "Cluster ready! Services have been deployed."
+
+echo "Remember to port forward Prometheus and Kourier in new terminals with:"
+echo "kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090"
+echo "kubectl port-forward -n kourier-system service/kourier 8080:80"
