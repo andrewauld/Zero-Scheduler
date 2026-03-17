@@ -45,4 +45,7 @@ logs/
 *.tmp
 .tmp/
 
+# Data files
+data/
+
 .gitignore
