@@ -21,7 +21,7 @@ FUNCTIONS = {
 def invoke_function(function_name, function_config):
 
     response = requests.get(function_config["url"])
-    print(f"Invoked {function_name}: {response.status_code} - {response.text[:50]}")
+    print(f"Invoked {function_name}: {response.status_code} - {response.text[:100]}")
     return True
 
 def generate_workload(duration_minutes=10, delay_seconds=5):

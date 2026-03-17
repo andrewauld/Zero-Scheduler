@@ -16,6 +16,7 @@ dist/
 *.dll
 *.so
 *.dylib
+.venv/
 
 # Go
 *.test

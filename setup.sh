@@ -67,6 +67,7 @@ kubectl apply -f services/prime_factorisation/prime_service.yaml
 echo ""
 echo "Cluster ready! Services have been deployed."
 
+echo ""
 echo "Remember to port forward Prometheus and Kourier in new terminals with:"
 echo "kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090"
 echo "kubectl port-forward -n kourier-system service/kourier 8080:80"
