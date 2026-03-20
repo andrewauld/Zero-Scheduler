@@ -4,6 +4,8 @@ import pandas as pd
 files = glob.glob("data/metrics_*.csv")
 df = pd.concat(map(pd.read_csv, files), ignore_index=True)
 
+# Make sure to check this with 'kubectl get nodes -o wide' to double-check they haven't changed
+# every time you set up a new cluster.
 node_map = {
     '172.18.0.4:9100': 'control-plane',
     '172.18.0.5:9100': 'worker-1',
