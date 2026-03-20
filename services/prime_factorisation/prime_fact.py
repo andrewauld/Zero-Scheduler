@@ -11,11 +11,11 @@ def main():
 
 @app.route("/prime_fact")
 def prime_fact_route():
-    iterations = random.randint(1000, 10000)
+    iterations = random.randint(100, 1000)
     results = []
 
     for i in range(iterations):
-        n = random.randint(10**11, 10**12)
+        n = random.randint(10**5, 10**7)
         factors = naive_fact(n)
         results.append(factors)
 
