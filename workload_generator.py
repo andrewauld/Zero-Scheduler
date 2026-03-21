@@ -26,7 +26,7 @@ def invoke_function(function_name, function_config):
     return True
 
 def ramp_up(phase, calls_per_second, duration_minutes):
-    print(f"Ramping up phase {phase} for {duration_minutes} minutes at {calls_per_second} calls per second.")
+    print(f"Ramping up phase {phase} for {duration_minutes} minutes at {calls_per_second} calls per second.\n")
 
     phase_start_time = datetime.datetime.now()
     phase_end_time = phase_start_time + datetime.timedelta(minutes=duration_minutes)
@@ -46,7 +46,7 @@ def ramp_up(phase, calls_per_second, duration_minutes):
             if sleep_time > 0:
                 time.sleep(sleep_time)
 
-    print(f"Phase {phase} finished. Generated {invocation_count} invocations.")
+    print(f"\nPhase {phase} finished. Generated {invocation_count} invocations.\n")
     return invocation_count
 
 def generate_workload(duration_minutes=10, delay_seconds=5):

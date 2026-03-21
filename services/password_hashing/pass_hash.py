@@ -13,12 +13,12 @@ def main():
 
 @app.route("/hash")
 def hash():
-    iterations = random.randint(100, 250)
+    iterations = random.randint(1, 5)
     results = []
     password = random_string(random.randint(10, 20))
     for i in range(iterations):
         salt = os.urandom(16)
-        key = hashlib.scrypt(password.encode(), salt=salt, n=16384, r=8, p=1)
+        key = hashlib.scrypt(password.encode(), salt=salt, n=1024, r=8, p=1)
         results.append(salt.hex() + ":" + key.hex())
 
     return f"Computed {iterations} hashes."
