@@ -1,6 +1,6 @@
 FROM python:3.9-slim
 WORKDIR /app
 COPY fanout_func.py .
-RUN pip install flask
+RUN pip install flask requests
 CMD ["python", "fanout_func.py"]
 LABEL authors="andrewauld"

@@ -16,6 +16,10 @@ FUNCTIONS = {
     "prime-fact": {
         "url": "http://prime-fact.default.127.0.0.1.sslip.io:8080/prime_fact",
         "method": "GET"
+    },
+    "fanout-func": {
+        "url": "http://fanout-func.default.127.0.0.1.sslip.io:8080/fanout",
+        "method": "GET"
     }
 }
 

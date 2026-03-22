@@ -29,10 +29,6 @@ echo ""
 echo "Getting external IP address"
 kubectl --namespace kourier-system get service kourier
 
-#echo ""
-#echo "Configuring DNS"
-#kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.21.1/serving-default-domain.yaml
-
 echo ""
 echo "Configuring HPA autoscaling..."
 kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.21.1/serving-hpa.yaml
@@ -57,12 +53,14 @@ echo "Loading images..."
 kind load docker-image kind.local/matrix-mult:v1 --name ml-scheduler
 kind load docker-image kind.local/pass-hash:v1 --name ml-scheduler
 kind load docker-image kind.local/prime-fact:v1 --name ml-scheduler
+kind load docker-image kind.local/fanout-func:v1 --name ml-scheduler
 
 echo ""
 echo "Deploying services..."
 kubectl apply -f services/matrix_multiplication/matrix_service.yaml
 kubectl apply -f services/password_hashing/password_service.yaml
 kubectl apply -f services/prime_factorisation/prime_service.yaml
+kubectl apply -f services/fanout/fanout_service.yaml
 
 echo ""
 echo "Cluster ready! Services have been deployed."
@@ -71,3 +69,4 @@ echo ""
 echo "Remember to port forward Prometheus and Kourier in new terminals with:"
 echo "kubectl port-forward -n monitoring svc/prometheus-kube-prometheus-prometheus 9090:9090"
 echo "kubectl port-forward -n kourier-system service/kourier 8080:80"
+echo ""
