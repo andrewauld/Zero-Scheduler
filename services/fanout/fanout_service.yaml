@@ -1,0 +1,12 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: fanout-func
+spec:
+  template:
+    spec:
+      containers:
+        - image: kind.local/fanout-func:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
