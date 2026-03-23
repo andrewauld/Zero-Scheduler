@@ -12,7 +12,7 @@ def main():
 def matrix_mult():
 
     # Creating square matrices of dimensions 10k x 10k -> 15k x 15k
-    matrixDimensions = np.random.randint(100, 300)
+    matrixDimensions = np.random.randint(320, 400)
 
     matrixA = np.random.rand(matrixDimensions, matrixDimensions)
     matrixB = np.random.rand(matrixDimensions, matrixDimensions)

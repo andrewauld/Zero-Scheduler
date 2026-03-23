@@ -18,7 +18,7 @@ def main():
 
 @app.route("/fanout")
 def fanout():
-    num_requests = random.randint(3, 8)
+    num_requests = random.randint(8, 10)
     targets = random.choices(SERVICES, k=num_requests)
     results = []
 

@@ -20,9 +20,27 @@ def get_metrics(query, label):
     return pd.DataFrame(rows)
 
 cpu_df = get_metrics(query='instance:node_cpu_utilisation:rate5m', label="cpu_usage")
+cpu_saturation_df = get_metrics(query='instance:node_cpu_saturation_cpu_wait:rate5m', label="cpu_saturation")
 memory_df = get_metrics(query='instance:node_memory_utilisation:ratio', label="memory_usage")
+available_memory_df = get_metrics(query='instance:node_memory_MemAvailable_bytes', label="available_memory")
+network_in_df = get_metrics(query='instance:node_network_receive_bytes_total{device!=lo}:rate5m', label="network_receive_bytes")
+network_out_df = get_metrics(query='instance:node_network_transmit_bytes_total{device!=lo}:rate5m', label="network_transmit_bytes")
+revision_latencies_sum_df = get_metrics(query='instance:revision_request_latencies_sum', label="revision_request_latencies_sum")
+revision_latencies_count_df = get_metrics(query='instance:revision_request_latencies_count', label="revision_request_latencies_count")
+revision_count_df = get_metrics(query='instance:revision_request_count:rate5m', label="revision_request_count")
+disk_df = get_metrics(query='instance:node_disk_io_time_seconds_total:rate5m', label="disk_io_time_seconds_total")
 
-df = pd.merge(cpu_df, memory_df, on=["timestamp", "node"], how="outer")
+df = pd.merge(cpu_df,
+              cpu_saturation_df,
+              memory_df,
+              available_memory_df,
+              network_in_df,
+              network_out_df,
+              revision_latencies_sum_df,
+              revision_latencies_count_df,
+              revision_count_df,
+              disk_df,
+              on=["timestamp", "node"], how="outer")
 
 # Make sure to check this with 'kubectl get nodes -o wide' to double-check they haven't changed
 # every time you set up a new cluster.

@@ -12,7 +12,7 @@ def main():
 
 @app.route("/hash")
 def hash():
-    iterations = random.randint(1, 5)
+    iterations = random.randint(6, 8)
     results = []
     password = random_string(random.randint(10, 20))
     for i in range(iterations):
