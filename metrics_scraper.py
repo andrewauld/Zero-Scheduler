@@ -30,8 +30,8 @@ revision_latencies_count_df = get_metrics(query='instance:revision_request_laten
 revision_count_df = get_metrics(query='instance:revision_request_count:rate5m', label="revision_request_count")
 disk_df = get_metrics(query='instance:node_disk_io_time_seconds_total:rate5m', label="disk_io_time_seconds_total")
 
-df = pd.merge(cpu_df,
-              cpu_saturation_df,
+df = cpu_df.copy()
+for i in [cpu_saturation_df,
               memory_df,
               available_memory_df,
               network_in_df,
@@ -39,8 +39,8 @@ df = pd.merge(cpu_df,
               revision_latencies_sum_df,
               revision_latencies_count_df,
               revision_count_df,
-              disk_df,
-              on=["timestamp", "node"], how="outer")
+              disk_df]:
+    df = pd.merge(df, i, on=["timestamp", "node"], how="outer")
 
 # Make sure to check this with 'kubectl get nodes -o wide' to double-check they haven't changed
 # every time you set up a new cluster.

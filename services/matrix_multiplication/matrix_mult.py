@@ -11,13 +11,11 @@ def main():
 @app.route("/matrix_mult")
 def matrix_mult():
 
-    # Creating square matrices of dimensions 10k x 10k -> 15k x 15k
     matrixDimensions = np.random.randint(320, 400)
 
     matrixA = np.random.rand(matrixDimensions, matrixDimensions)
     matrixB = np.random.rand(matrixDimensions, matrixDimensions)
 
-    # Multiply the matrices to stress test the system
     with np.errstate(divide='ignore', over='ignore', invalid='ignore'):
         result = np.matmul(matrixA, matrixB)
     return f"Completed matrix multiplication of matrices of dimensions {matrixDimensions} x {matrixDimensions}."
