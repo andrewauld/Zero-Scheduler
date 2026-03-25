@@ -49,6 +49,23 @@ echo "Waiting for Prometheus to be ready..."
 kubectl wait --for=condition=Ready pods --all -n monitoring --timeout=300s
 
 echo ""
+echo "Deploying OpenTelemetry Collector..."
+kubectl apply -f otel-collector.yaml
+
+echo ""
+echo "Waiting for OpenTelemetry collector to be ready..."
+sleep 5
+kubectl wait --for=condition=Ready pods -l app=otel-collector -n monitoring --timeout=300s
+
+echo ""
+echo "Applying additional metrics scraping..."
+kubectl patch configmap/config-observability \
+  --namespace knative-serving \
+  --type merge \
+  --patch '{"data":{"metrics.backend-destination":"prometheus","metrics.reporting-period-seconds":"15","metrics-protocol":"http/protobuf","metrics-endpoint":"http://otel-collector.monitoring.svc.cluster.local:4318","request-metrics-protocol":"http/protobuf","request-metrics-endpoint":"http://otel-collector.monitoring.svc.cluster.local:4318"}}'
+kubectl apply -f knative-monitor.yaml
+
+echo ""
 echo "Loading images..."
 kind load docker-image kind.local/matrix-mult:v1 --name ml-scheduler
 kind load docker-image kind.local/pass-hash:v1 --name ml-scheduler

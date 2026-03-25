@@ -25,10 +25,10 @@ memory_df = get_metrics(query='instance:node_memory_utilisation:ratio', label="m
 available_memory_df = get_metrics(query='instance:node_memory_MemAvailable_bytes', label="available_memory")
 network_in_df = get_metrics(query='instance:node_network_receive_bytes_total{device!=lo}:rate5m', label="network_receive_bytes")
 network_out_df = get_metrics(query='instance:node_network_transmit_bytes_total{device!=lo}:rate5m', label="network_transmit_bytes")
-revision_latencies_sum_df = get_metrics(query='instance:revision_request_latencies_sum', label="revision_request_latencies_sum")
-revision_latencies_count_df = get_metrics(query='instance:revision_request_latencies_count', label="revision_request_latencies_count")
-revision_count_df = get_metrics(query='instance:revision_request_count:rate5m', label="revision_request_count")
 disk_df = get_metrics(query='instance:node_disk_io_time_seconds_total:rate5m', label="disk_io_time_seconds_total")
+request_rate_df = get_metrics(query='instance:revision_request_count', label="request_count")
+latency_sum_df = get_metrics(query='instance:revision_request_latencies_sum', label="request_latency_sum")
+latency_count_df = get_metrics(query='instance:revision_request_latencies_count', label="request_latency_count")
 
 df = cpu_df.copy()
 for i in [cpu_saturation_df,
@@ -36,10 +36,10 @@ for i in [cpu_saturation_df,
               available_memory_df,
               network_in_df,
               network_out_df,
-              revision_latencies_sum_df,
-              revision_latencies_count_df,
-              revision_count_df,
-              disk_df]:
+              disk_df,
+            request_rate_df,
+              latency_sum_df,
+              latency_count_df]:
     df = pd.merge(df, i, on=["timestamp", "node"], how="outer")
 
 # Make sure to check this with 'kubectl get nodes -o wide' to double-check they haven't changed
