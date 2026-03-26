@@ -62,7 +62,7 @@ echo "Applying additional metrics scraping..."
 kubectl patch configmap/config-observability \
   --namespace knative-serving \
   --type merge \
-  --patch '{"data":{"metrics.backend-destination":"prometheus","metrics.reporting-period-seconds":"15","metrics-protocol":"http/protobuf","metrics-endpoint":"http://otel-collector.monitoring.svc.cluster.local:4318","request-metrics-protocol":"http/protobuf","request-metrics-endpoint":"http://otel-collector.monitoring.svc.cluster.local:4318"}}'
+  --patch '{"data":{"metrics-protocol": "http/protobuf", "metrics-endpoint": "http://otel-collector.monitoring.svc.cluster.local:4318", "metrics-export-interval": "15s", "request-metrics-protocol": "http/protobuf", "request-metrics-endpoint": "http://otel-collector.monitoring.svc.cluster.local:4318", "request-metrics-export-interval": "15s", "metrics.backend-destination": null, "metrics.reporting-period-seconds": null}}'
 kubectl apply -f knative-monitor.yaml
 
 echo ""
