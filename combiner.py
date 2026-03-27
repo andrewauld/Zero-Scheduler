@@ -8,9 +8,9 @@ df = pd.concat(map(pd.read_csv, files), ignore_index=True)
 # every time you set up a new cluster.
 node_map = {
     '172.18.0.4:9100': 'control-plane',
-    '172.18.0.5:9100': 'worker-1',
-    '172.18.0.2:9100': 'worker-2',
-    '172.18.0.3:9100': 'worker-3'
+    '172.18.0.3:9100': 'worker-1',
+    '172.18.0.5:9100': 'worker-2',
+    '172.18.0.2:9100': 'worker-3'
 }
 
 df['node'] = df['node'].map(node_map).fillna(df['node'])
