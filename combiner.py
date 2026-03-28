@@ -1,27 +1,24 @@
 import glob
 import pandas as pd
+import numpy as np
 
 files = glob.glob("data/metrics_*.csv")
 df = pd.concat(map(pd.read_csv, files), ignore_index=True)
 
-# Make sure to check this with 'kubectl get nodes -o wide' to double-check they haven't changed
-# every time you set up a new cluster.
-node_map = {
-    '172.18.0.4:9100': 'control-plane',
-    '172.18.0.3:9100': 'worker-1',
-    '172.18.0.5:9100': 'worker-2',
-    '172.18.0.2:9100': 'worker-3'
-}
-
-df['node'] = df['node'].map(node_map).fillna(df['node'])
-
 df.sort_values(["node", "timestamp"], inplace=True)
+df.reset_index(drop=True, inplace=True)
+
 print(f"Combined dataset: {len(df)} rows across {df['node'].unique()} nodes.")
 print(f"Files combined: {len(files)}")
 
-df['node_score'] = 1 - (0.7 * df['cpu_usage'] + 0.3 * df['memory_usage'])
+# Carry out feature engineering here (cpu/request, memory/request, power consumption, target label, etc.)
+df["pod_memory_usage_mb"] = df["pod_memory_usage"] / 1024 / 1024
+df["network_in_mb"] = df["network_in"] / 1024 / 1024
+df["network_out_mb"] = df["network_out"] / 1024 / 1024
+df["disk_in_mb"] = df["disk_in"] / 1024 / 1024
+df["disk_out_mb"] = df["disk_out"] / 1024 / 1024
 
-df['node_score'] = (df['node_score'] - df['node_score'].min()) / (df['node_score'].max() - df['node_score'].min())
+df.drop(columns=["pod_memory_usage", "network_in", "network_out", "disk_in", "disk_out"], inplace=True)
 
 df.to_csv("data/combined_metrics.csv", index=False)
 print("\nCombined dataset saved to data/combined_metrics.csv")
