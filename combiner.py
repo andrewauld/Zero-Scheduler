@@ -26,6 +26,8 @@ time_jumps = df["timestamp"].diff().dt.total_seconds().fillna(0)
 df["test_run"] = (time_jumps > 120).cumsum()
 
 def assign_request_rate(group):
+    run_id = group.name
+
     run_start = group["timestamp"].min()
     elapsed_time = (group["timestamp"] - run_start).dt.total_seconds() / 60
 
@@ -38,9 +40,45 @@ def assign_request_rate(group):
 
     rates = [10, 30, 50, 100]
     group["request_rate"] = np.select(conditions, rates, default=10)
+    group["test_run"] = [run_id] * len(group)
     return group
 
 df = df.groupby("test_run", group_keys=False).apply(assign_request_rate)
+
+P_IDLE = 0.2
+P_MAX = 1.0
+df["estimated_power"] = P_IDLE + (P_MAX - P_IDLE) * df["cpu_usage"]
+df["pod_count_safe"] = df["pod_count"].replace(0, np.nan)
+df["power_efficiency"] = df["estimated_power"] / df["pod_count_safe"]
+df["network_total_kb"] = df["network_in_kb"] + df["network_out_kb"]
+
+df.drop(columns=["pod_count_safe", "network_in_kb", "network_out_kb"], inplace=True)
+
+def assign_target_label(group):
+    run_id, ts = group.name
+
+    min_idx = group["power_efficiency"].idxmin()
+    group["best_node"] = 0
+    group.loc[min_idx, "best_node"] = 1
+
+    group["test_run"] = [run_id] * len(group)
+    group["timestamp"] = [ts] * len(group)
+
+    return group
+
+df = df.groupby(["test_run", "timestamp"], group_keys=False).apply(assign_target_label)
+
+timestamp_col = df.pop("timestamp")
+df.insert(1, "timestamp", timestamp_col)
+
+memory_per_pod_col = df.pop("pod_memory_usage_mb")
+df.insert(6, "pod_memory_usage_mb", memory_per_pod_col)
+
+pod_count_col = df.pop("pod_count")
+df.insert(7, "pod_count", pod_count_col)
+
+network_total_col = df.pop("network_total_kb")
+df.insert(11, "network_total_kb", network_total_col)
 
 df.to_csv("data/combined_metrics.csv", index=False)
 print("\nCombined dataset saved to data/combined_metrics.csv")
