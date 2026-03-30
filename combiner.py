@@ -49,24 +49,15 @@ P_IDLE = 0.2
 P_MAX = 1.0
 df["estimated_power"] = P_IDLE + (P_MAX - P_IDLE) * df["cpu_usage"]
 df["pod_count_safe"] = df["pod_count"].replace(0, np.nan)
-df["power_efficiency"] = df["estimated_power"] / df["pod_count_safe"]
+
+MAX_PODS = df["pod_count"].max()
+df["pod_capacity_used"] = df["pod_count"] / MAX_PODS
+
+df["power_efficiency"] = df["estimated_power"] * (0.5 + 0.5 * df["pod_capacity_used"])
 df["network_total_kb"] = df["network_in_kb"] + df["network_out_kb"]
 
 df.drop(columns=["pod_count_safe", "network_in_kb", "network_out_kb"], inplace=True)
-
-def assign_target_label(group):
-    run_id, ts = group.name
-
-    min_idx = group["power_efficiency"].idxmin()
-    group["best_node"] = 0
-    group.loc[min_idx, "best_node"] = 1
-
-    group["test_run"] = [run_id] * len(group)
-    group["timestamp"] = [ts] * len(group)
-
-    return group
-
-df = df.groupby(["test_run", "timestamp"], group_keys=False).apply(assign_target_label)
+df.drop(columns=["pod_capacity_used"], inplace=True)
 
 timestamp_col = df.pop("timestamp")
 df.insert(1, "timestamp", timestamp_col)
