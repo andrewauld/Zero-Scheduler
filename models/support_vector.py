@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import joblib
 
-from sklearn import ensemble
 from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVR
 
 metrics = pd.read_csv("../data/combined_metrics.csv")
 
@@ -16,23 +18,19 @@ y_train = train_df["power_efficiency"]
 X_test = test_df.drop(columns=["power_efficiency", "node", "timestamp", "test_run"])
 y_test = test_df["power_efficiency"]
 
-params = {
-    "n_estimators": 500,
-    "max_depth": 4,
-    "min_samples_split": 5,
-    "learning_rate": 0.01,
-    "loss": "squared_error"
-}
+svr = Pipeline([
+    ("scaler", StandardScaler()),
+    ("svr", SVR(kernel="rbf", C=1.0, epsilon=0.01))
+])
 
-gbm = ensemble.GradientBoostingRegressor(**params)
-gbm.fit(X_train, y_train)
+svm = svr.fit(X_train, y_train)
 
-y_pred = gbm.predict(X_test)
+y_pred = svr.predict(X_test)
 
 rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 r2 = r2_score(y_test, y_pred)
 print(f"Root Mean Squared Error (RMSE): {rmse}")
 print(f"R2 score: {r2}")
 
-joblib.dump(gbm, "gradient_boosting.pk1")
-print("\nGradient Boosting Regressor model saved to models/gradient_boosting.pk1")
+joblib.dump(svm, "support_vector.pk1")
+print("\nSupport Vector Machine model saved to models/support_vector.pk1")

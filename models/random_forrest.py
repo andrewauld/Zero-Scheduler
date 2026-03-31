@@ -28,10 +28,10 @@ rfm.fit(X_train, y_train)
 
 y_pred = rfm.predict(X_test)
 
-rmse = np.sqrt(mean_squared_error(y_test, rfm.predict(X_test)))
+rmse = np.sqrt(mean_squared_error(y_test, y_pred))
 r2 = r2_score(y_test, y_pred)
 print(f"Root Mean Squared Error (RMSE): {rmse}")
 print(f"R2 score: {r2}")
 
 joblib.dump(rfm, "random_forrest.pk1")
-print("\nGradient Boosting model saved to models/random_forrest.pk1")
+print("\nRandom Forrest Regressor model saved to models/random_forrest.pk1")
