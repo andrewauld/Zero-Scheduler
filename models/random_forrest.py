@@ -20,19 +20,18 @@ params = {
     "n_estimators": 500,
     "max_depth": 4,
     "min_samples_split": 5,
-    "learning_rate": 0.01,
-    "loss": "squared_error"
+    "random_state": 13
 }
 
-gbm = ensemble.GradientBoostingRegressor(**params)
-gbm.fit(X_train, y_train)
+rfm = ensemble.RandomForestRegressor(**params)
+rfm.fit(X_train, y_train)
 
-y_pred = gbm.predict(X_test)
+y_pred = rfm.predict(X_test)
 
-rmse = np.sqrt(mean_squared_error(y_test, gbm.predict(X_test)))
+rmse = np.sqrt(mean_squared_error(y_test, rfm.predict(X_test)))
 r2 = r2_score(y_test, y_pred)
 print(f"Root Mean Squared Error (RMSE): {rmse}")
 print(f"R2 score: {r2}")
 
-joblib.dump(gbm, "gradient_boosting.pk1")
-print("\nGradient Boosting model saved to models/gradient_boosting.pk1")
+joblib.dump(rfm, "random_forrest.pk1")
+print("\nGradient Boosting model saved to models/random_forrest.pk1")
