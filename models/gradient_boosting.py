@@ -34,5 +34,5 @@ r2 = r2_score(y_test, y_pred)
 print(f"Root Mean Squared Error (RMSE): {rmse}")
 print(f"R2 score: {r2}")
 
-joblib.dump(gbm, "gradient_boosting.pk1")
-print("\nGradient Boosting Regressor model saved to models/gradient_boosting.pk1")
+joblib.dump(gbm, "gradient_boosting.pkl")
+print("\nGradient Boosting Regressor model saved to models/gradient_boosting.pkl")

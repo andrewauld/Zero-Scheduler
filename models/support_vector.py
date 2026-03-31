@@ -32,5 +32,5 @@ r2 = r2_score(y_test, y_pred)
 print(f"Root Mean Squared Error (RMSE): {rmse}")
 print(f"R2 score: {r2}")
 
-joblib.dump(svm, "support_vector.pk1")
-print("\nSupport Vector Machine model saved to models/support_vector.pk1")
+joblib.dump(svm, "support_vector.pkl")
+print("\nSupport Vector Machine model saved to models/support_vector.pkl")

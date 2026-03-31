@@ -48,4 +48,7 @@ logs/
 # Data files
 data/
 
+# ML models
+models/*.pkl
+
 .gitignore
