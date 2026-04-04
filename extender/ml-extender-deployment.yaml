@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-extender
+  namespace: kube-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ml-extender
+  template:
+    metadata:
+      labels:
+        app: ml-extender
+    spec:
+      containers:
+        - name: ml-extender
+          image: kind.local/ml-extender:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MODEL_PATH
+              value: /app/models/gradient_boosting.pkl
+            - name: PROMETHEUS_URL
+              value: http://prometheus-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ml-extender
+  namespace: kube-system
+spec:
+  selector:
+    app: ml-extender
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
