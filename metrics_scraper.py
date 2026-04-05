@@ -1,6 +1,12 @@
+import os
 import pandas as pd
 import datetime
+import sys
 from prometheus_api_client import PrometheusConnect
+
+mode = sys.argv[1] if len(sys.argv) > 1 else "default"
+output_dir = f"data/{mode}"
+os.makedirs(output_dir, exist_ok=True)
 
 prometheus = PrometheusConnect(url="http://localhost:9090", disable_ssl=True)
 
@@ -104,5 +110,5 @@ print(df.head())
 print(f"\nCollected {len(df)} rows across {df['node'].unique()} nodes.")
 
 filename = f"metrics_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
-df.to_csv(f"data/{filename}", index=False)
-print(f"Metrics saved to data/{filename}")
+df.to_csv(f"{output_dir}/{filename}", index=False)
+print(f"Metrics saved to {output_dir}/{filename}")

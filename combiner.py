@@ -1,8 +1,11 @@
+import os
+import sys
 import glob
 import pandas as pd
 import numpy as np
 
-files = glob.glob("data/metrics_*.csv")
+mode = sys.argv[1] if len(sys.argv) > 1 else "default"
+files = glob.glob(f"data/{mode}/metrics_*.csv")
 df = pd.concat(map(pd.read_csv, files), ignore_index=True)
 
 df["timestamp"] = pd.to_datetime(df["timestamp"])
@@ -71,5 +74,5 @@ df.insert(7, "pod_count", pod_count_col)
 network_total_col = df.pop("network_total_kb")
 df.insert(11, "network_total_kb", network_total_col)
 
-df.to_csv("data/combined_metrics.csv", index=False)
-print("\nCombined dataset saved to data/combined_metrics.csv")
+df.to_csv(f"data/{mode}/combined_metrics.csv", index=False)
+print(f"\nCombined dataset saved to data/{mode}/combined_metrics.csv")
