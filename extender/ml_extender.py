@@ -20,7 +20,7 @@ log.info(f"Prometheus URL: {PROMETHEUS_URL}")
 
 FEATURES_COLS = [
     "cpu_usage", "memory_usage", "node_load", "pod_cpu_usage", "pod_memory_usage_mb", "pod_count",
-    "cpu_throttling", "disk_in_mb", "disk_out_mb", "network_total_kb", "request_rate", "estimated_power"
+    "cpu_throttling", "disk_in_kb", "disk_out_kb", "network_total_kb", "request_rate", "estimated_power"
 ]
 
 P_IDLE = 0.2
