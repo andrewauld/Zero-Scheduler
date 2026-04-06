@@ -8,6 +8,7 @@ clientConnection:
 profiles:
   - schedulerName: default-scheduler
 extenders:
+  - urlPrefix: "http://10.96.197.232:8080"
   - urlPrefix: "http://10.96.41.83:8080"
     filterVerb: "filter"
     prioritizeVerb: "prioritize"
