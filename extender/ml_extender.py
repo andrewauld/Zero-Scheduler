@@ -36,12 +36,24 @@ def query_scalar(promql):
         log.error(f"Error querying Prometheus: {e}")
         return 0.0
 
+def get_node_instance(node_name):
+    result = prometheus.custom_query(f'kube_node_info{{node="{node_name}"}}')
+    if not result:
+        log.warning(f"No node info found for {node_name}")
+        return None
+    internal_ip = result[0]["metric"].get("internal_ip")
+    return f"{internal_ip}:9100"
 
 def get_node_features(node_name):
+    instance = get_node_instance(node_name)
+    if not instance:
+        log.error(f"No instance found for node {node_name}, returning 0s")
+        return {col: 0.0 for col in FEATURES_COLS}
+
     queries = {
-        "cpu_usage": f'instance:node_cpu_utilisation:rate5m{{node="{node_name}"}}',
-        "memory_usage": f'instance:node_memory_utilisation:ratio{{node="{node_name}"}}',
-        "node_load": f'instance:node_load1_per_cpu:ratio{{node="{node_name}"}}',
+        "cpu_usage": f'instance:node_cpu_utilisation:rate5m{{instance="{instance}"}}',
+        "memory_usage": f'instance:node_memory_utilisation:ratio{{instance="{instance}"}}',
+        "node_load": f'instance:node_load1_per_cpu:ratio{{instance="{instance}"}}',
         "pod_cpu_usage": f'sum by (node) (rate(container_cpu_usage_seconds_total[1m])) * on(node) group_left() (kube_node_info{{node="{node_name}"}} > 0)',
         "pod_memory_usage_mb": f'sum(container_memory_working_set_bytes{{node="{node_name}"}}) / 1024 / 1024',
         "pod_count": f'count(kube_pod_info{{node="{node_name}"}})',
@@ -53,8 +65,7 @@ def get_node_features(node_name):
 
     features = {}
     for key, query in queries.items():
-        val = query_scalar(query)
-        features[key] = val
+        features[key] = query_scalar(query)
 
     features["estimated_power"] = P_IDLE + (P_MAX - P_IDLE) * features["cpu_usage"]
     features["request_rate"] = 10
