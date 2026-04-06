@@ -1,13 +1,16 @@
 apiVersion: kubescheduler.config.k8s.io/v1
 kind: KubeSchedulerConfiguration
+parallelism: 16
+leaderElection:
+  leaderElect: true
 clientConnection:
   kubeconfig: "/etc/kubernetes/scheduler.conf"
 profiles:
   - schedulerName: default-scheduler
 extenders:
-  - urlPrefix: "http://ml-extender.kube-system.svc.cluster.local:8080"
+  - urlPrefix: "http://10.96.41.83:8080"
     filterVerb: "filter"
-    prioritizeVerb: "prioritise"
-    weight: 5
+    prioritizeVerb: "prioritize"
+    weight: 8
     enableHTTPS: false
     ignorable: true

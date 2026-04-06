@@ -73,43 +73,17 @@ if [ "$ML_EXTENDER" = "true" ]; then
   kubectl apply -f extender/ml-extender-deployment.yaml
   kubectl wait --for=condition=Ready pods -l app=ml-extender -n kube-system --timeout=120s
 
+  EXTENDER_IP=$(kubectl get svc ml-extender -n kube-system -o jsonpath='{.spec.clusterIP}')
+  sed -i '' "s|urlPrefix:.*|urlPrefix: \"http://$EXTENDER_IP:8080\"|" ml-scheduler-config.yaml
+
   echo ""
   echo "Configuring scheduler extender..."
   docker cp ml-scheduler-config.yaml ml-scheduler-control-plane:/etc/kubernetes/ml-scheduler-config.yaml
-  docker exec ml-scheduler-control-plane python3 -c "
-  with open('/etc/kubernetes/manifests/kube-scheduler.yaml', 'r') as f:
-      content = f.read()
-  if '--config=/etc/kubernetes/ml-scheduler-config.yaml' not in content:
-      content = content.replace(
-          '    - kube-scheduler',
-          '    - kube-scheduler\n    - --config=/etc/kubernetes/ml-scheduler-config.yaml',
-          1
-      )
-      with open('/etc/kubernetes/manifests/kube-scheduler.yaml', 'w') as f:
-          f.write(content)
-      print('Config flag injected.')
-  else:
-      print('Config flag already present, skipping.')
-  "
-  docker exec ml-scheduler-control-plane python3 -c "
-  with open('/etc/kubernetes/manifests/kube-scheduler.yaml', 'r') as f:
-      content = f.read()
 
-  if 'name: ml-scheduler-config' not in content:
-      content = content.replace(
-          '    - mountPath: /etc/kubernetes/scheduler.conf\n      name: kubeconfig\n      readOnly: true',
-          '    - mountPath: /etc/kubernetes/scheduler.conf\n      name: kubeconfig\n      readOnly: true\n    - mountPath: /etc/kubernetes/ml-scheduler-config.yaml\n      name: ml-scheduler-config\n      readOnly: true'
-      )
-      content = content.replace(
-          '  - hostPath:\n      path: /etc/kubernetes/scheduler.conf\n      type: FileOrCreate\n    name: kubeconfig',
-          '  - hostPath:\n      path: /etc/kubernetes/scheduler.conf\n      type: FileOrCreate\n    name: kubeconfig\n  - hostPath:\n      path: /etc/kubernetes/ml-scheduler-config.yaml\n      type: File\n    name: ml-scheduler-config'
-      )
-      with open('/etc/kubernetes/manifests/kube-scheduler.yaml', 'w') as f:
-          f.write(content)
-      print('Volume mount added.')
-  else:
-      print('Volume mount already present, skipping.')
-  "
+  docker cp inject_flag.py ml-scheduler-control-plane:/etc/kubernetes/inject_flag.py
+  docker exec ml-scheduler-control-plane python3 /etc/kubernetes/inject_flag.py
+  docker cp inject_mount.py ml-scheduler-control-plane:/etc/kubernetes/inject_mount.py
+  docker exec ml-scheduler-control-plane python3 /etc/kubernetes/inject_mount.py
 
   echo ""
   echo "Waiting for scheduler to restart..."
