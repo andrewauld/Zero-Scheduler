@@ -1,9 +1,30 @@
 from flask import Flask, request, jsonify
 from prometheus_api_client import PrometheusConnect
+from collections import deque
+import time
 import os
 import logging
 import pandas as pd
 import joblib
+
+class RequestRateTracker:
+    def __init__(self, window_seconds=60):
+        self.window = window_seconds
+        self.timestamps = deque()
+
+    def record_request(self):
+        now = time.time()
+        self.timestamps.append(now)
+        while self.timestamps and self.timestamps[0] < now - self.window:
+            self.timestamps.popleft()
+
+    def get_rate(self):
+        now = time.time()
+        while self.timestamps and self.timestamps[0] < now - self.window:
+            self.timestamps.popleft()
+        return len(self.timestamps) / self.window
+
+tracker = RequestRateTracker(window_seconds=60)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -68,7 +89,7 @@ def get_node_features(node_name):
         features[key] = query_scalar(query)
 
     features["estimated_power"] = P_IDLE + (P_MAX - P_IDLE) * features["cpu_usage"]
-    features["request_rate"] = 10
+    features["request_rate"] = tracker.get_rate()
 
     return features
 
@@ -88,6 +109,7 @@ def filter_nodes():
 
 @app.route("/prioritize", methods=["POST"])
 def prioritize():
+    tracker.record_request()
     data = request.get_json()
     candidate_nodes = data.get("Nodes", {}).get("items", [])
 
