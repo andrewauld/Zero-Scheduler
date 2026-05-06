@@ -35,18 +35,29 @@ def assign_request_rate(group):
     elapsed_time = (group["timestamp"] - run_start).dt.total_seconds() / 60
 
     conditions = [
-        elapsed_time < 2,
-        (elapsed_time >= 2) & (elapsed_time < 5),
-        (elapsed_time >= 5) & (elapsed_time < 8),
-        elapsed_time >= 8
+        elapsed_time < 1,
+        (elapsed_time >= 1) & (elapsed_time < 3),
+        (elapsed_time >= 3) & (elapsed_time < 6),
+        elapsed_time >= 6
     ]
 
-    rates = [10, 30, 50, 100]
+    rates = [10, 100, 50, 25]
     group["request_rate"] = np.select(conditions, rates, default=10)
     group["test_run"] = [run_id] * len(group)
     return group
 
-df = df.groupby("test_run", group_keys=False).apply(assign_request_rate)
+def assign_request_rate_sinusoidal(group, min_rate=10, max_rate=100, cycles=2):
+    total_seconds = (group["timestamp"].max() - group["timestamp"].min()).total_seconds()
+    period_seconds = total_seconds / cycles
+    elapsed = (group["timestamp"] - group["timestamp"].min()).dt.total_seconds()
+
+    group["request_rate"] = min_rate + (max_rate - min_rate) * (
+        0.5 + 0.5 * np.sin(2 * np.pi * elapsed / period_seconds)
+    )
+    group["test_run"] = group.name
+    return group
+
+df = df.groupby("test_run", group_keys=False).apply(assign_request_rate())
 
 P_IDLE = 0.2
 P_MAX = 1.0

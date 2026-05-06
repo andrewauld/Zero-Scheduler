@@ -3,15 +3,12 @@ import sys
 import glob
 
 ml_mode = sys.argv[1] if len(sys.argv) > 1 else "default"
-ml_file = glob.glob(f"data/{ml_mode}/combined_metrics.csv")
+ml = pd.read_csv(f"../data/{ml_mode}/combined_metrics.csv")
 default_mode = sys.argv[2] if len(sys.argv) > 2 else "default"
-default_file = glob.glob(f"data/{default_mode}/combined_metrics.csv")
+default = pd.read_csv(f"../data/{default_mode}/combined_metrics.csv")
 
 print("\nOVERALL: ML vs Default Scheduler Comparison")
 print("==============================================\n")
-
-ml = pd.read_csv("../data/gradual_increase_ml/combined_metrics.csv")
-default = pd.read_csv("../data/gradual_increase_default/combined_metrics.csv")
 
 # Std = more even distribution
 print("ML cpu std:", ml.groupby("timestamp")["cpu_usage"].std().mean())
